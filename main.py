@@ -7,103 +7,26 @@ dbm = DataBaseManager()
 
 def check_authentication(username, password):
     admin_document = dbm.AdminCollection.find_one({"username": username, "password": password})
-    if admin_document:
-        dbusername = admin_document["username"]
+    if admin_document and "username" in admin_document:
+        # dbusername = admin_document["username"]
         # ... rest of your code
         return True
     else:
+        showinfo("Authentication Error", "Invalid Username or password")
         return False
 
 def login(username, password):
-    if dbm.check_authentication(username=username, password=password):
-        app.log_in()
+    if check_authentication(username=username, password=password):
+        app.log_in()  # Make sure app.log_in() is defined in your App class
     else:
         showinfo("Login Error", "Invalid Username or password")
 
 def logout():
     yes = askokcancel(title="Info", message="Are you sure you want to log out? ")
     if yes:
-        app.log_out()
+        app.log_out()  # Make sure app.log_out() is defined in your App class
 
-def createusernamepassword():
-    app.create_changeusernamepassword()
-    app.changeusernamepasswordtoplevel.set_changebuttoncommand(changeusernamepassword)
-
-def changeusernamepassword(oldusername, oldpassword, newusername, newpassword):
-    if dbm.check_authentication(oldusername, oldpassword):
-        dbm.change_authentication_details(newusername, newpassword)
-        showinfo(title="Changed", message="Changed Username and Password")
-        app.changeusernamepasswordtoplevel.destroy()
-
-def start_feedback():
-    app.start_feedbackmanager()
-    app.feedbackmanager.display_feedbacks(dbm.get_feedbacks())
-
-def add_feedback(dict):
-    dbm.insert_feedback(dict)
-
-def add_employees(dict):
-    dict_2 = {}
-    for key, value in dict.items():
-        dict_2[key] = value.get()
-
-    print(dict_2)
-    dbm.add_employee(dict_2)
-    app.addemployeestoplevel.destroy()
-
-def remove_employee(entry):
-    dbm.EmployeeCollection.delete_one({"Name": entry.get()})
-    app.removeemployeestoplevel.destroy()
-
-def remove_room(entry):
-    dbm.RoomsCollection.delete_one({"Room Id": entry.get()})
-    app.removeroomtoplevel.destroy()
-
-def add_room(dict):
-    dict_2 = {}
-    for key, value in dict.items():
-        dict_2[key] = value.get()
-    dbm.add_room(dict_2)
-    app.addroomtoplevel.destroy()
-
-def book_room(dict):
-    dict_2 = {}
-    for key, value in dict.items():
-        dict_2[key] = value.get()
-    dbm.book_room(dict_2)
-    app.bookroomroplevel.destroy()
-
-def create_addemployees_toplevel():
-    app.create_addemployeestoplevel()
-    app.addemployeestoplevel.set_addemployeebuttoncommand(add_employees)
-
-def create_removeemployees_toplevel():
-    app.create_removeemployeestoplevel()
-    app.removeemployeestoplevel.set_removeemployeebuttoncommand(remove_employee)
-
-def create_employeemanager():
-    app.create_employeemanager()
-    app.employeemanager.display_employees(dbm.get_employees())
-
-def create_addroomtoplevel():
-    app.create_addroomtoplevel()
-    app.addroomtoplevel.set_addroombuttoncommand(add_room)
-
-def create_removeroomtoplevel():
-    app.create_removeroomtoplevel()
-    app.removeroomtoplevel.set_removeroombuttoncommand(remove_room)
-
-def create_bookroomtoplevel():
-    app.create_bookroomtoplevel()
-    app.bookroomroplevel.set_bookroombuttoncommand(book_room)
-
-def create_roommanager():
-    app.create_roommanager()
-    app.roommanager.display_rooms(dbm.get_rooms())
-
-def create_viewstudents():
-    app.create_viewstudents()
-    app.viewstudentsframe.display_students(dbm.get_students())
+# ... (rest of your functions)
 
 app.loginframe.set_logincommand(login)
 app.mainframe.set_command_for_button(5, logout)
